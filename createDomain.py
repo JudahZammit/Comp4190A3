@@ -171,4 +171,4 @@ if __name__ == '__main__':
     # how do you create a domain? see the following code! the number 20 means the number of obstacles is 20
     x = Domain(20)
     print(x.getObstacels()[0].x, x.getObstacels()[0].y)
-    x.drawDomain(path=[((13, 24), (18, 45), (34, 57))])
+    x.drawDomain(path=[(13, 24), (18, 45), (34, 57)])
