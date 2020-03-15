@@ -73,10 +73,10 @@ class Domain:
         obstacles = []
 
         while(len(obstacles) < onum):
-            x = random.uniform(0.0, self.width)
-            y = random.uniform(0.0, self.height)
-            w = random.uniform(10, 50)
-            h = random.uniform(10, 50)
+            x = int(random.uniform(0.0, self.width))
+            y = int(random.uniform(0.0, self.height))
+            w = int(random.uniform(10, 50))
+            h = int(random.uniform(10, 50))
             if (x + w) > self.width:
                 w = self.width - x
             if (y + h) > self.height:
