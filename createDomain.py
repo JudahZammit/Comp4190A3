@@ -49,6 +49,12 @@ class Obstacle(Rectangle):
             self.patch = plt.Rectangle(
                 (self.x, self.y), self.width, self.height, facecolor=color, edgecolor='#202020')
 
+    def inside(self,x,y):
+        in_x = (x >= self.x and x <= (self.x+self.width))
+        in_y = (y >= self.y and y <= (self.y+self.height))
+        in_obs = in_x and in_y
+        return in_obs 
+
 
 class Domain:
     def __init__(self, onum):
@@ -56,6 +62,20 @@ class Domain:
         self.height = 100
         self.obstacles = self.CreateObstacles(onum)
         (self.ix, self.iy), (self.gx, self.gy) = self.CreateProblemInstance()
+        self.map = None
+
+    def getMap(self):
+        if(self.map == None):
+            self.map = {}
+            for x in range(self.width):
+                for y in range(self.height):
+                    self.map[(x,y)] = True
+                    for obs in self.obstacles:
+                        if (obs.inside(x,y)):
+                            self.map[(x,y)] = False
+                            break
+
+        return self.map
 
     def getInitial(self):
         return self.ix, self.iy
@@ -73,51 +93,42 @@ class Domain:
         obstacles = []
 
         while(len(obstacles) < onum):
-            x = int(random.uniform(0.0, self.width))
-            y = int(random.uniform(0.0, self.height))
-            w = int(random.uniform(10, 50))
-            h = int(random.uniform(10, 50))
-            if (x + w) > self.width:
-                w = self.width - x
-            if (y + h) > self.height:
-                h = self.height - y
+            w = random.randint(10, 50)
+            h = random.randint(10, 50)
+            x = random.randint(0, self.width)
+            y = random.randint(0, self.height)
+
             obs = Obstacle(x, y, w, h, '#808080')
             found = False
-            for o in obstacles:
-                if (o.CalculateOverlap(obs) > 0.0):
-                    found = True
-                    break
-            if (not found):
-                obstacles = obstacles + [obs]
-            # obstacles.append(obs)
+            obstacles = obstacles + [obs]
         return obstacles
 
     # randomly choose a initial position and goal
     def CreateProblemInstance(self):
         found = False
         while (not found):
-            ix = random.uniform(0.0, self.width)
-            iy = random.uniform(0.0, self.height)
+            ix = random.randint(0, self.width)
+            iy = random.randint(0, self.height)
 
             oinitial = Obstacle(ix, iy, 0.1, 0.1)
             found = True
             for obs in self.obstacles:
-                if (oinitial.CalculateOverlap(obs) > 0.0):
+                if (obs.inside(ix,iy)):
                     found = False
                     break
 
         found = False
         while (not found):
-            gx = random.uniform(0.0, self.width)
-            gy = random.uniform(0.0, self.height)
+            gx = random.randint(0, self.width)
+            gy = random.randint(0, self.height)
 
             ogoal = Obstacle(gx, gy, 0.1, 0.1)
             found = True
             for obs in self.obstacles:
-                if (ogoal.CalculateOverlap(obs) > 0.0):
+                if (obs.inside(gx,gy)):
                     found = False
                     break
-            if (oinitial.CalculateOverlap(ogoal) > 0.0):
+            if (oinitial.x == ogoal.x or oinitial.y == ogoal.y):
                 found = False
 
         return((ix, iy), (gx, gy))
@@ -144,7 +155,7 @@ class Domain:
     # you can pass a list of coordinates(tuples) as argument, the first tuple should be the initial coordinate
     # and the last one should be the goal
     # if argument is not specified, then it will draw the domain
-    def drawDomain(self, path=None):
+    def drawDomain(self,nodes=None, path=None):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1, aspect='equal')
         ax.set_xlim(0.0, self.width)
@@ -157,6 +168,10 @@ class Domain:
         g = plt.Rectangle((self.gx, self.gy), .81, .81,
                           facecolor='#00ff00', label='goal')
         ax.add_patch(g)
+
+        if nodes is not None:
+            for node in nodes:
+                 plt.plot(node[0],node[1],'b.')
 
         if path is not None:
             x = [x for (x, y) in path]
