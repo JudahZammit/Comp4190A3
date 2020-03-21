@@ -49,6 +49,9 @@ class Obstacle(Rectangle):
             self.patch = plt.Rectangle(
                 (self.x, self.y), self.width, self.height, facecolor=color, edgecolor='#202020')
 
+    def getCoordinate(self):
+        return (self.x, self.y)
+
 
 class Domain:
     def __init__(self, onum):
@@ -75,13 +78,14 @@ class Domain:
         while(len(obstacles) < onum):
             x = int(random.uniform(0.0, self.width))
             y = int(random.uniform(0.0, self.height))
-            w = int(random.uniform(10, 50))
-            h = int(random.uniform(10, 50))
+            w = int(random.uniform(10, 20))
+            h = int(random.uniform(10, 20))
             if (x + w) > self.width:
                 w = self.width - x
             if (y + h) > self.height:
                 h = self.height - y
             obs = Obstacle(x, y, w, h, '#808080')
+        # if you don't allow the obstacles to overlap, use the following
             found = False
             for o in obstacles:
                 if (o.CalculateOverlap(obs) > 0.0):
@@ -89,6 +93,7 @@ class Domain:
                     break
             if (not found):
                 obstacles = obstacles + [obs]
+        # if you allow the obstacles to overlap, use the following
             # obstacles.append(obs)
         return obstacles
 
