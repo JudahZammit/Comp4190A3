@@ -54,6 +54,9 @@ class Obstacle(Rectangle):
         in_y = (y >= self.y and y <= (self.y+self.height))
         in_obs = in_x and in_y
         return in_obs 
+    
+    def getCoordinate(self):
+        return (self.x, self.y)
 
 
 class Domain:
@@ -93,14 +96,26 @@ class Domain:
         obstacles = []
 
         while(len(obstacles) < onum):
-            w = random.randint(10, 50)
-            h = random.randint(10, 50)
-            x = random.randint(0, self.width)
-            y = random.randint(0, self.height)
-
+            x = int(random.uniform(0.0, self.width))
+            y = int(random.uniform(0.0, self.height))
+            w = int(random.uniform(10, 20))
+            h = int(random.uniform(10, 20))
+            if (x + w) > self.width:
+                w = self.width - x
+            if (y + h) > self.height:
+                h = self.height - y
             obs = Obstacle(x, y, w, h, '#808080')
+        # if you don't allow the obstacles to overlap, use the following
             found = False
-            obstacles = obstacles + [obs]
+            
+            for o in obstacles:
+                if (o.CalculateOverlap(obs) > 0.0):
+                    found = True
+                    break
+            if (not found):
+                obstacles = obstacles + [obs]
+        # if you allow the obstacles to overlap, use the following
+            # obstacles.append(obs)
         return obstacles
 
     # randomly choose a initial position and goal
