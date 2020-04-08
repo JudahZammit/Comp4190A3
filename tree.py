@@ -6,7 +6,9 @@ from a_star import astar as A
 from qtd import FBSP
 import numpy as np
 
-d = D(1)
+d = D(20)
 d.drawDomain()
 state = I(d,decomposition = 'FBSP')
-solution = A(state)
+path = A(state)
+d.drawDomain(path = path,nodes = state.nodes)
+d.drawDomain(path = path)
