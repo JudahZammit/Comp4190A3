@@ -1,4 +1,7 @@
 from quad import Quadrant as Q
+from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+from sklearn.tree import _tree
 
 def QuadTreeDecompositon(quadrant):
     full_quads = []
@@ -22,13 +25,128 @@ def QuadTreeDecompositon(quadrant):
 
     return full_quads, empty_quads
 
+def FBSP(map_):
+    labels = np.array(list(map_.values())).astype('int')
+    features = np.array(list(map_.keys()))
+    clf = DecisionTreeClassifier(
+            criterion = 'entropy')
+    clf.fit(features,labels)
+
+    n_nodes = clf.tree_.node_count
+
+    children_left = clf.tree_.children_left
+
+    children_right = clf.tree_.children_right
+
+    feature = clf.tree_.feature
+
+    threshold = clf.tree_.threshold
+
+
+    def find_path(node_numb, path, x):
+
+        path.append(node_numb)
+
+        if node_numb == x:
+            return True
+
+        left = False
+
+        right = False
+
+        if (children_left[node_numb] !=-1):
+
+            left = find_path(children_left[node_numb], path, x)
+
+        if (children_right[node_numb] !=-1):
+
+            right = find_path(children_right[node_numb], path, x)
+
+        if left or right :
+
+            return True
+
+        path.remove(node_numb)
+
+        return False
+
+    def get_rule(path, column_names):
+
+        mask ={'x':0,'y':0,'width':100,'height':100}
+
+        for index, node in enumerate(path):
+
+            #We check if we are not in the leaf
+            if index!=len(path)-1:
+
+                # Do we go under or over the threshold ?
+
+                if (children_left[node] == path[index+1]):
+
+                    if(column_names[feature[node]] == 'x'):
+                        mask['width'] = min(threshold[node],mask['width'])
+                    if(column_names[feature[node]] == 'y'):
+                        mask['height'] = min(threshold[node],mask['height'])
+
+                else:
+
+                    if(column_names[feature[node]] == 'x'):
+                        mask['x'] = max(threshold[node],mask['x'])
+                    if(column_names[feature[node]] == 'y'):
+                        mask['y'] = max(threshold[node],mask['y'])
+
+        mask['height'] = mask['height'] -mask['y']
+        mask['width'] = mask['width'] -mask['x']
+        return mask
+
+    # Leaves
+
+    features = np.array(list(map_.keys()))
+
+    leave_id = clf.apply(features)
+
+    paths ={}
+
+    for leaf in np.unique(leave_id):
+
+        path_leaf = []
+
+        find_path(0, path_leaf, leaf)
+
+        paths[leaf] = np.unique(np.sort(path_leaf))
+
+    rules = {}
+
+    for key in paths:
+
+        rules[key] = get_rule(paths[key], ['x','y'])
+
+
+    full = []
+    emp = []
+    for rule in list(rules.values()):
+        empty = clf.predict([[rule['x'] + rule['width']/2
+            ,rule['y'] + rule['height']/2]]).squeeze()
+
+        quad = Q(rule['x'],rule['y'],rule['width']
+                ,rule['height'],map_)
+        if empty == 1:
+            emp.append(quad)
+        elif empty == 0:
+            full.append(quad)
+
+    return full,emp
+
 
 class InitialState:
     def __init__(self,domain,decomposition = 'QTD'):
         q = Q(0,0,domain.width,domain.height,domain.getMap())
         if decomposition == 'QTD':
             full,emp = QuadTreeDecompositon(q)
+        if decomposition == 'FBSP':
+            full,emp = FBSP(domain.getMap())
         
+
         self.ix = domain.ix
         self.iy = domain.iy
         self.gx = domain.gx
