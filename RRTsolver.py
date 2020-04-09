@@ -80,7 +80,7 @@ class solver:
         if nearest.distance(target) > step:
             (x1, y1), (x2, y2) = nearest.getCoordinate(), target.getCoordinate()
             if x1 == x2:
-                coord = (x1, step * (y2 - y1) / abs(y1 - y2))
+                coord = (x1, y1 + step * (y2 - y1) / abs(y1 - y2))
             else:
                 vec = np.asarray((x2 - x1, y2 - y1))
                 normalized = vec / np.linalg.norm(vec)
@@ -167,6 +167,6 @@ class solver:
 
 if __name__ == '__main__':
     # you can change the number (i.e. 50) to control the number of obstacles
-    domain = createDomain.Domain(30)
+    domain = createDomain.Domain(30, 20)
     solver1 = solver(domain)
     path = solver1.solve()
