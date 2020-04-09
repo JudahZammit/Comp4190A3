@@ -167,6 +167,6 @@ class solver:
 
 if __name__ == '__main__':
     # you can change the number (i.e. 50) to control the number of obstacles
-    domain = createDomain.Domain(30)
+    domain = createDomain.Domain(30, 20)
     solver1 = solver(domain)
     path = solver1.solve()
