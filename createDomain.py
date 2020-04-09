@@ -54,9 +54,10 @@ class Obstacle(Rectangle):
 
 
 class Domain:
-    def __init__(self, onum):
+    def __init__(self, onum, size):
         self.width = 100
         self.height = 100
+        self.size = size
         self.obstacles = self.CreateObstacles(onum)
         (self.ix, self.iy), (self.gx, self.gy) = self.CreateProblemInstance()
 
@@ -78,8 +79,8 @@ class Domain:
         while(len(obstacles) < onum):
             x = int(random.uniform(0.0, self.width))
             y = int(random.uniform(0.0, self.height))
-            w = int(random.uniform(10, 20))
-            h = int(random.uniform(10, 20))
+            w = int(random.uniform(10, self.size))
+            h = int(random.uniform(10, self.size))
             if (x + w) > self.width:
                 w = self.width - x
             if (y + h) > self.height:
@@ -174,6 +175,6 @@ class Domain:
 if __name__ == '__main__':
     # beware the x and y for an obstacle is the lower left vertex
     # how do you create a domain? see the following code! the number 20 means the number of obstacles is 20
-    x = Domain(20)
+    x = Domain(20, 30)
     print(x.getObstacels()[0].x, x.getObstacels()[0].y)
     x.drawDomain(path=[(13, 24), (18, 45), (34, 57)])
