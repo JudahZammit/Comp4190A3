@@ -1,0 +1,3 @@
+# Comp4190A3
+IN CASE YOU CAN'T RUN THE LATEX FILE: GO TO https://www.overleaf.com/1769145465hqpgnmvhcpvb 
+THEN EDIT ONLINE...
