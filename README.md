@@ -2,7 +2,7 @@
 
 Instructions on partitionInvestigation.py:
 this file will test the algorithm with different sizes and different numbers of obstacles. Therefore, it takes a 
-lot of time, plz be patient
+lot of time, plz be patient....add more
 
 Instructions on RRTsolver.py
 If you run RRTsolver.py, the solver will solve a domain with 20 obstacles and each obstacle's maximum size is 50
