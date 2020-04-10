@@ -1,3 +1,4 @@
 # Comp4190A3
-IN CASE YOU CAN'T RUN THE LATEX FILE: GO TO https://www.overleaf.com/1769145465hqpgnmvhcpvb 
-THEN EDIT ONLINE...
+To Run a demo and investigation of FBSP and QTD run partitionInvestigation.py
+
+To run a demo of RRT run RRTsolver.py

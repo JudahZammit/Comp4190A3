@@ -1,4 +1,4 @@
-from qtd import InitialState as I
+from decompose import InitialState as I
 import math
 import bisect
 

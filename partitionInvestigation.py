@@ -1,9 +1,9 @@
 from createDomain import Domain as D
 from quad import Quadrant as Q
-from qtd import QuadTreeDecompositon as QTD
-from qtd import InitialState as I
+from decompose import QuadTreeDecompositon as QTD
+from decompose import InitialState as I
 from a_star import astar as A
-from qtd import FBSP
+from decompose import FBSP
 import numpy as np
 from timeit import timeit
 from operator import add
