@@ -49,6 +49,12 @@ class Obstacle(Rectangle):
             self.patch = plt.Rectangle(
                 (self.x, self.y), self.width, self.height, facecolor=color, edgecolor='#202020')
 
+    def inside(self,x,y):
+        in_x = (x >= self.x and x <= (self.x+self.width))
+        in_y = (y >= self.y and y <= (self.y+self.height))
+        in_obs = in_x and in_y
+        return in_obs 
+    
     def getCoordinate(self):
         return (self.x, self.y)
 
@@ -60,6 +66,20 @@ class Domain:
         self.size = size
         self.obstacles = self.CreateObstacles(onum)
         (self.ix, self.iy), (self.gx, self.gy) = self.CreateProblemInstance()
+        self.map = None
+
+    def getMap(self):
+        if(self.map == None):
+            self.map = {}
+            for x in range(self.width):
+                for y in range(self.height):
+                    self.map[(x,y)] = True
+                    for obs in self.obstacles:
+                        if (obs.inside(x,y)):
+                            self.map[(x,y)] = False
+                            break
+
+        return self.map
 
     def getInitial(self):
         return self.ix, self.iy
@@ -88,6 +108,7 @@ class Domain:
             obs = Obstacle(x, y, w, h, '#808080')
         # if you don't allow the obstacles to overlap, use the following
             found = False
+            
             for o in obstacles:
                 if (o.CalculateOverlap(obs) > 0.0):
                     found = True
@@ -102,28 +123,28 @@ class Domain:
     def CreateProblemInstance(self):
         found = False
         while (not found):
-            ix = random.uniform(0.0, self.width)
-            iy = random.uniform(0.0, self.height)
+            ix = random.randint(0, self.width)
+            iy = random.randint(0, self.height)
 
             oinitial = Obstacle(ix, iy, 0.1, 0.1)
             found = True
             for obs in self.obstacles:
-                if (oinitial.CalculateOverlap(obs) > 0.0):
+                if (obs.inside(ix,iy)):
                     found = False
                     break
 
         found = False
         while (not found):
-            gx = random.uniform(0.0, self.width)
-            gy = random.uniform(0.0, self.height)
+            gx = random.randint(0, self.width)
+            gy = random.randint(0, self.height)
 
             ogoal = Obstacle(gx, gy, 0.1, 0.1)
             found = True
             for obs in self.obstacles:
-                if (ogoal.CalculateOverlap(obs) > 0.0):
+                if (obs.inside(gx,gy)):
                     found = False
                     break
-            if (oinitial.CalculateOverlap(ogoal) > 0.0):
+            if (oinitial.x == ogoal.x or oinitial.y == ogoal.y):
                 found = False
 
         return((ix, iy), (gx, gy))
@@ -150,7 +171,7 @@ class Domain:
     # you can pass a list of coordinates(tuples) as argument, the first tuple should be the initial coordinate
     # and the last one should be the goal
     # if argument is not specified, then it will draw the domain
-    def drawDomain(self, path=None):
+    def drawDomain(self,nodes=None, path=None):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1, aspect='equal')
         ax.set_xlim(0.0, self.width)
@@ -163,6 +184,10 @@ class Domain:
         g = plt.Rectangle((self.gx, self.gy), .81, .81,
                           facecolor='#00ff00', label='goal')
         ax.add_patch(g)
+
+        if nodes is not None:
+            for node in nodes:
+                 plt.plot(node[0],node[1],'b.')
 
         if path is not None:
             x = [x for (x, y) in path]
