@@ -89,7 +89,7 @@ def demo(num_obs = 20,size = 20):
 
 def investigate(num_obs,size):
     print('_________________________________________________________')
-    getAvgStats(times = 10, num_obs = num_obs,size = size)
+    getAvgStats(times = 1, num_obs = num_obs,size = size)
     print('Demo With '+str(num_obs)+' Obstacles and Obstacle Size '+ str(size)+ ' :')
     demo(num_obs = num_obs,size = size)
 
